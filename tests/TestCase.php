@@ -29,10 +29,12 @@ class TestCase extends Orchestra
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
-
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-hr_table.php.stub';
-        $migration->up();
-        */
+        config()->set('database.connections.testing', [
+            'driver'   => 'sqlite',
+            'database' => ':memory:',
+            'prefix'   => '',
+        ]);
+        config()->set('hr.web_enabled', false);
+        config()->set('hr.api_enabled', false);
     }
 }
