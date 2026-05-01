@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace Centrex\Hr\Tests;
 
+use Centrex\Hr\HrServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Centrex\Hr\HrServiceProvider;
 
 class TestCase extends Orchestra
 {
