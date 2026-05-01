@@ -2,13 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace VendorName\Skeleton\Commands;
+namespace Centrex\Hr\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class HrCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-hr';
 
     public $description = 'My command';
 
