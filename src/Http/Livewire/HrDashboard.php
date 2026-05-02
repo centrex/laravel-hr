@@ -19,8 +19,8 @@ class HrDashboard extends Component
 
     private function headcountStats(): array
     {
-        $total        = Employee::count();
-        $active       = Employee::where('is_active', true)->count();
+        $total = Employee::count();
+        $active = Employee::where('is_active', true)->count();
         $newThisMonth = Employee::where('is_active', true)
             ->whereYear('joining_date', now()->year)
             ->whereMonth('joining_date', now()->month)
@@ -38,12 +38,12 @@ class HrDashboard extends Component
     private function leaveStats(): array
     {
         return [
-            'pending'         => LeaveRequest::where('status', 'pending')->count(),
-            'approved_month'  => LeaveRequest::where('status', 'approved')
+            'pending'        => LeaveRequest::where('status', 'pending')->count(),
+            'approved_month' => LeaveRequest::where('status', 'approved')
                 ->whereYear('approved_at', now()->year)
                 ->whereMonth('approved_at', now()->month)
                 ->count(),
-            'rejected_month'  => LeaveRequest::where('status', 'rejected')
+            'rejected_month' => LeaveRequest::where('status', 'rejected')
                 ->whereYear('approved_at', now()->year)
                 ->whereMonth('approved_at', now()->month)
                 ->count(),
@@ -67,9 +67,9 @@ class HrDashboard extends Component
         $activeCount = Employee::where('is_active', true)->count();
 
         return [
-            'present_today'      => $presentToday,
-            'absent_today'       => max(0, $activeCount - $presentToday),
-            'total_hours_month'  => round($totalHoursMonth, 1),
+            'present_today'     => $presentToday,
+            'absent_today'      => max(0, $activeCount - $presentToday),
+            'total_hours_month' => round($totalHoursMonth, 1),
         ];
     }
 
@@ -91,10 +91,10 @@ class HrDashboard extends Component
 
     private function attendanceTrend(): array
     {
-        $prefix     = config('hr.table_prefix', 'hr_');
+        $prefix = config('hr.table_prefix', 'hr_');
         $connection = config('hr.drivers.database.connection', config('database.default'));
-        $days       = 30;
-        $from       = now()->subDays($days - 1)->startOfDay();
+        $days = 30;
+        $from = now()->subDays($days - 1)->startOfDay();
 
         $rows = DB::connection($connection)
             ->table("{$prefix}attendances")
@@ -107,12 +107,12 @@ class HrDashboard extends Component
             ->keyBy('day');
 
         $categories = [];
-        $data       = [];
+        $data = [];
 
         for ($i = $days - 1; $i >= 0; $i--) {
-            $date         = now()->subDays($i)->toDateString();
+            $date = now()->subDays($i)->toDateString();
             $categories[] = now()->subDays($i)->format('d M');
-            $data[]       = (int) ($rows->get($date)?->cnt ?? 0);
+            $data[] = (int) ($rows->get($date)?->cnt ?? 0);
         }
 
         return [
@@ -129,7 +129,7 @@ class HrDashboard extends Component
             ->pluck('cnt', 'status');
 
         $statuses = ['pending', 'approved', 'rejected', 'cancelled'];
-        $counts   = $rows->toArray();
+        $counts = $rows->toArray();
 
         return [
             'series'     => array_map(fn (string $s): int => (int) ($counts[$s] ?? 0), $statuses),
@@ -139,13 +139,13 @@ class HrDashboard extends Component
 
     public function render(): View
     {
-        $headcount       = $this->headcountStats();
-        $leaveStats      = $this->leaveStats();
+        $headcount = $this->headcountStats();
+        $leaveStats = $this->leaveStats();
         $attendanceStats = $this->attendanceStats();
 
-        $deptChart        = $this->headcountByDepartment();
-        $attendanceChart  = $this->attendanceTrend();
-        $leaveChart       = $this->leaveStatusDistribution();
+        $deptChart = $this->headcountByDepartment();
+        $attendanceChart = $this->attendanceTrend();
+        $leaveChart = $this->leaveStatusDistribution();
 
         $recentLeaves = LeaveRequest::with(['employee', 'leaveType'])
             ->latest()
@@ -158,7 +158,7 @@ class HrDashboard extends Component
             ->limit(5)
             ->get();
 
-        $departments  = Department::where('is_active', true)->count();
+        $departments = Department::where('is_active', true)->count();
         $designations = Designation::count();
 
         return view('hr::livewire.dashboard', compact(
