@@ -6,6 +6,7 @@ namespace Centrex\Hr;
 
 use Centrex\Hr\Commands\HrCommand;
 use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
+use Centrex\Hr\Http\Livewire\HrDashboard;
 use Illuminate\Support\Facades\{Blade, Gate};
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -108,6 +109,7 @@ class HrServiceProvider extends ServiceProvider
             return;
         }
 
+        Livewire::component('hr-dashboard', HrDashboard::class);
         Livewire::component('hr-entity-index', EntityIndexPage::class);
         Livewire::component('hr-entity-form', EntityFormPage::class);
     }
