@@ -13,11 +13,11 @@ return [
     'table_prefix' => env('HR_TABLE_PREFIX', 'hr_'),
 
     'web_enabled'    => env('HR_WEB_ENABLED', true),
-    'web_middleware' => ['web', 'auth'],
+    'web_middleware' => ['web', 'auth', 'can:hr.employees.view'],
     'web_prefix'     => 'hr',
 
     'api_enabled'    => env('HR_API_ENABLED', true),
-    'api_middleware' => ['api', 'auth:sanctum'],
+    'api_middleware' => ['api', 'auth:sanctum', 'can:hr.employees.view'],
     'api_prefix'     => 'api/hr',
 
     'currency' => env('HR_CURRENCY', env('PAYROLL_CURRENCY', 'BDT')),
