@@ -18,6 +18,10 @@ class EntityIndexPage extends Component
 
     public string $search = '';
 
+    public string $filterMin = '';
+
+    public string $filterMax = '';
+
     public function mount(string $entity): void
     {
         HrEntityRegistry::definition($entity);
@@ -26,6 +30,16 @@ class EntityIndexPage extends Component
     }
 
     public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterMin(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingFilterMax(): void
     {
         $this->resetPage();
     }
@@ -53,10 +67,25 @@ class EntityIndexPage extends Component
             });
         }
 
+        $qtyFilter = $definition['quantity_filter'] ?? null;
+
+        if ($qtyFilter !== null) {
+            $col = $qtyFilter['column'];
+
+            if ($this->filterMin !== '') {
+                $query->where($col, '>=', (float) $this->filterMin);
+            }
+
+            if ($this->filterMax !== '') {
+                $query->where($col, '<=', (float) $this->filterMax);
+            }
+        }
+
         return view('hr::livewire.entities.index-page', [
             'definition' => $definition,
             'columns'    => HrEntityRegistry::indexColumns($this->entity),
             'records'    => $query->paginate(config("hr.per_page.{$this->entity}", 15)),
+            'qtyFilter'  => $qtyFilter,
         ]);
     }
 }

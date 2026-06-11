@@ -20,6 +20,26 @@
                 class="input-sm"
             />
         </div>
+        @if($qtyFilter)
+            <div class="flex items-center gap-1">
+                <span class="text-xs text-base-content/50 whitespace-nowrap">{{ $qtyFilter['label'] }}</span>
+                <input
+                    type="number"
+                    wire:model.live.debounce.400ms="filterMin"
+                    placeholder="Min"
+                    class="input input-sm input-bordered w-24"
+                    min="0"
+                />
+                <span class="text-base-content/40">–</span>
+                <input
+                    type="number"
+                    wire:model.live.debounce.400ms="filterMax"
+                    placeholder="Max"
+                    class="input input-sm input-bordered w-24"
+                    min="0"
+                />
+            </div>
+        @endif
         <x-tallui-button
             :label="'New ' . $definition['singular']"
             icon="o-plus"
