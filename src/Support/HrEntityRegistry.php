@@ -35,7 +35,7 @@ class HrEntityRegistry
                 'search'          => ['code', 'name', 'description'],
                 'index_columns'   => ['code', 'name', 'salary_min', 'salary_max', 'is_active'],
                 'quantity_filter' => ['column' => 'salary_min', 'label' => 'Salary Min'],
-                'form_fields'   => [
+                'form_fields'     => [
                     self::field('code', 'text', ['required', 'string', 'max:30']),
                     self::field('name', 'text', ['required', 'string', 'max:200']),
                     self::field('department_id', 'select', ['nullable', 'integer', 'exists:' . self::table(Department::class) . ',id'], null, Department::class, 'name'),
@@ -52,7 +52,7 @@ class HrEntityRegistry
                 'search'          => ['code', 'name', 'email', 'phone'],
                 'index_columns'   => ['code', 'name', 'email', 'employment_type', 'status', 'monthly_salary', 'currency', 'is_active'],
                 'quantity_filter' => ['column' => 'monthly_salary', 'label' => 'Monthly Salary'],
-                'form_fields'   => [
+                'form_fields'     => [
                     self::field('code', 'text', ['required', 'string', 'max:30']),
                     self::field('name', 'text', ['required', 'string', 'max:300']),
                     self::field('email', 'email', ['nullable', 'email', 'max:200']),
@@ -84,7 +84,7 @@ class HrEntityRegistry
                 'search'          => ['code', 'name'],
                 'index_columns'   => ['code', 'name', 'annual_allowance', 'is_paid', 'requires_approval', 'is_active'],
                 'quantity_filter' => ['column' => 'annual_allowance', 'label' => 'Annual Allowance'],
-                'form_fields'   => [
+                'form_fields'     => [
                     self::field('code', 'text', ['required', 'string', 'max:30']),
                     self::field('name', 'text', ['required', 'string', 'max:200']),
                     self::field('annual_allowance', 'number', ['nullable', 'integer', 'min:0'], 0),
