@@ -106,13 +106,27 @@
             @endif
         </x-tallui-card>
 
+        <div x-data="{
+            open: localStorage.getItem('hr_quick_actions') !== 'false',
+            toggle() { this.open = !this.open; localStorage.setItem('hr_quick_actions', this.open ? 'true' : 'false'); }
+        }">
         <x-tallui-card title="Quick Actions" icon="o-bolt" :shadow="true" padding="normal">
+            <x-slot:actions>
+                <button @click="toggle()" class="btn btn-ghost btn-xs gap-1 text-base-content/50 hover:text-base-content">
+                    <span x-text="open ? 'Hide' : 'Show'"></span>
+                    <x-heroicon-o-chevron-up x-show="open" class="w-3 h-3" x-cloak />
+                    <x-heroicon-o-chevron-down x-show="!open" class="w-3 h-3" x-cloak />
+                </button>
+            </x-slot:actions>
+            <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-1">
             <div class="flex flex-col gap-2 mt-2">
                 {{-- <x-tallui-button label="Add Attendance" icon="o-clock" :link="route('hr.entities.attendances.create')" class="btn-outline btn-sm w-full" /> --}}
                 {{-- <x-tallui-button label="New Leave Request" icon="o-calendar-days" :link="route('hr.entities.leave_requests.create')" class="btn-outline btn-sm w-full" /> --}}
                 <x-tallui-button label="Departments" icon="o-building-office" :link="route('hr.entities.departments.index')" class="btn-outline btn-sm w-full" />
             </div>
+            </div>
         </x-tallui-card>
+        </div>
     </div>
 
     {{-- ── Charts row ──────────────────────────────────────────────────────────── --}}
