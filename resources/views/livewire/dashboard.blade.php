@@ -107,7 +107,7 @@
         </x-tallui-card>
 
         <div x-data="{
-            open: localStorage.getItem('hr_quick_actions') !== 'false',
+            open: localStorage.getItem('hr_quick_actions') === 'true',
             toggle() { this.open = !this.open; localStorage.setItem('hr_quick_actions', this.open ? 'true' : 'false'); }
         }">
         <x-tallui-card title="Quick Actions" icon="o-bolt" :shadow="true" padding="normal">
