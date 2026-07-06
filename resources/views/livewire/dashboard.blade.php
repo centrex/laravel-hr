@@ -10,18 +10,28 @@
             <x-tallui-breadcrumb :links="[['label' => 'HR'], ['label' => 'Dashboard']]" />
         </x-slot:breadcrumbs>
         <x-slot:actions>
-            <x-tallui-button
-                label="Add Employee"
-                icon="o-plus"
-                :link="route('hr.entities.employees.create')"
-                class="btn-primary btn-sm"
-            />
-            <x-tallui-button
-                label="Employees"
-                icon="o-table-cells"
-                :link="route('hr.entities.employees.index')"
-                class="btn-ghost btn-sm"
-            />
+            <x-tallui-button label="My Attendance" icon="o-finger-print" :link="route('hr.my-attendance')" class="btn-ghost btn-sm" />
+            <x-tallui-button label="My Leave" icon="o-calendar-days" :link="route('hr.my-leave')" class="btn-ghost btn-sm" />
+            <x-tallui-button label="Leave Approvals" icon="o-clipboard-document-check" :link="route('hr.leave-approvals')" class="btn-ghost btn-sm" />
+            @can('hr.attendance.manage')
+                <x-tallui-button label="Attendance" icon="o-table-cells" :link="route('hr.attendance')" class="btn-ghost btn-sm" />
+            @endcan
+            @can('hr.employees.manage')
+                <x-tallui-button
+                    label="Add Employee"
+                    icon="o-plus"
+                    :link="route('hr.entities.employees.create')"
+                    class="btn-primary btn-sm"
+                />
+            @endcan
+            @can('hr.employees.view')
+                <x-tallui-button
+                    label="Employees"
+                    icon="o-table-cells"
+                    :link="route('hr.entities.employees.index')"
+                    class="btn-ghost btn-sm"
+                />
+            @endcan
         </x-slot:actions>
     </x-tallui-page-header>
 
@@ -122,7 +132,9 @@
             <div class="flex flex-col gap-2 mt-2">
                 {{-- <x-tallui-button label="Add Attendance" icon="o-clock" :link="route('hr.entities.attendances.create')" class="btn-outline btn-sm w-full" /> --}}
                 {{-- <x-tallui-button label="New Leave Request" icon="o-calendar-days" :link="route('hr.entities.leave_requests.create')" class="btn-outline btn-sm w-full" /> --}}
-                <x-tallui-button label="Departments" icon="o-building-office" :link="route('hr.entities.departments.index')" class="btn-outline btn-sm w-full" />
+                @can('hr.departments.view')
+                    <x-tallui-button label="Departments" icon="o-building-office" :link="route('hr.entities.departments.index')" class="btn-outline btn-sm w-full" />
+                @endcan
             </div>
             </div>
         </x-tallui-card>

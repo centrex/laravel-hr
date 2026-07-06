@@ -14,7 +14,7 @@ class Employee extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'code', 'name', 'email', 'phone', 'address', 'city', 'country',
+        'code', 'user_id', 'name', 'email', 'phone', 'address', 'city', 'country',
         'department_id', 'designation_id', 'manager_id', 'employment_type',
         'status', 'joining_date', 'termination_date', 'monthly_salary',
         'currency', 'bank_account_name', 'bank_account_number', 'tax_id',
@@ -74,5 +74,10 @@ class Employee extends Model
     public function payrollProfile(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(config('auth.providers.users.model', 'App\\Models\\User'), 'user_id');
     }
 }

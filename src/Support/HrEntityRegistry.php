@@ -54,6 +54,7 @@ class HrEntityRegistry
                 'quantity_filter' => ['column' => 'monthly_salary', 'label' => 'Monthly Salary'],
                 'form_fields'     => [
                     self::field('code', 'text', ['required', 'string', 'max:30']),
+                    self::field('user_id', 'number', ['nullable', 'integer', 'min:1']),
                     self::field('name', 'text', ['required', 'string', 'max:300']),
                     self::field('email', 'email', ['nullable', 'email', 'max:200']),
                     self::field('phone', 'text', ['nullable', 'string', 'max:50']),

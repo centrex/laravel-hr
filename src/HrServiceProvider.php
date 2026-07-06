@@ -6,7 +6,9 @@ namespace Centrex\Hr;
 
 use Centrex\Hr\Commands\HrCommand;
 use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
-use Centrex\Hr\Http\Livewire\HrDashboard;
+use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
+use Centrex\Hr\Models\Employee;
+use Centrex\Hr\Observers\EmployeePayrollObserver;
 use Illuminate\Support\Facades\{Blade, Gate};
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
@@ -32,6 +34,10 @@ class HrServiceProvider extends ServiceProvider
             $this->registerLivewireComponents();
         });
         $this->registerGates();
+
+        if ((bool) config('hr.payroll_sync.enabled', false) && class_exists(\Centrex\Payroll\Models\Employee::class)) {
+            Employee::observe(EmployeePayrollObserver::class);
+        }
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
@@ -112,6 +118,10 @@ class HrServiceProvider extends ServiceProvider
         Livewire::component('hr-dashboard', HrDashboard::class);
         Livewire::component('hr-entity-index', EntityIndexPage::class);
         Livewire::component('hr-entity-form', EntityFormPage::class);
+        Livewire::component('hr-my-attendance', MyAttendancePage::class);
+        Livewire::component('hr-attendance-management', AttendanceManagementPage::class);
+        Livewire::component('hr-my-leave', MyLeavePage::class);
+        Livewire::component('hr-leave-approvals', LeaveApprovalsPage::class);
     }
 
     private function registerViteDirective(): void
