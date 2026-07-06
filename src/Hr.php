@@ -6,8 +6,7 @@ namespace Centrex\Hr;
 
 use Centrex\Hr\Exceptions\{AlreadyCheckedInException, AlreadyCheckedOutException, InsufficientLeaveBalanceException, InvalidLeaveRequestStatusException, NotCheckedInException, UnauthorizedLeaveApprovalException};
 use Centrex\Hr\Models\{Attendance, Employee, LeaveRequest, LeaveType};
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Support\{Carbon, Collection};
 use Illuminate\Support\Facades\Gate;
 
 class Hr
@@ -75,10 +74,10 @@ class Hr
 
         $attendance = Attendance::firstOrNew(['employee_id' => $employee->id, 'work_date' => $date]);
         $attendance->fill([
-            'check_in'     => $data['check_in'] ?? $attendance->check_in,
-            'check_out'    => $data['check_out'] ?? $attendance->check_out,
-            'status'       => $data['status'] ?? ($attendance->status ?: 'present'),
-            'notes'        => $data['notes'] ?? $attendance->notes,
+            'check_in'  => $data['check_in'] ?? $attendance->check_in,
+            'check_out' => $data['check_out'] ?? $attendance->check_out,
+            'status'    => $data['status'] ?? ($attendance->status ?: 'present'),
+            'notes'     => $data['notes'] ?? $attendance->notes,
         ]);
 
         if ($attendance->check_in && $attendance->check_out) {
@@ -155,10 +154,10 @@ class Hr
             $dateKey = $cursor->toDateString();
 
             $state = match (true) {
-                $this->isWeekend($cursor)                                          => 'weekend',
-                $attendances->get($dateKey)?->check_in !== null                    => 'present',
-                $this->onApprovedLeave($employee, $cursor)                         => 'on_leave',
-                default                                                             => 'absent',
+                $this->isWeekend($cursor)                       => 'weekend',
+                $attendances->get($dateKey)?->check_in !== null => 'present',
+                $this->onApprovedLeave($employee, $cursor)      => 'on_leave',
+                default                                         => 'absent',
             };
 
             $counts[$state]++;

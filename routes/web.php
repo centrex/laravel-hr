@@ -2,8 +2,8 @@
 
 declare(strict_types = 1);
 
-use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
+use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Support\HrEntityRegistry;
 use Illuminate\Support\Facades\Route;
 

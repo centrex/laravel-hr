@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace Centrex\Hr;
 
 use Centrex\Hr\Commands\HrCommand;
-use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
+use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Models\Employee;
 use Centrex\Hr\Observers\EmployeePayrollObserver;
 use Illuminate\Support\Facades\{Blade, Gate};
