@@ -46,6 +46,7 @@ class PayrollSync
             'city'                    => $employee->city,
             'country'                 => $employee->country,
             'department'              => $employee->department?->name,
+            'sbu_code'                => $employee->sbu_code,
             'designation'             => $employee->designation?->name,
             'employment_type'         => $employee->employment_type,
             'joining_date'            => $employee->joining_date,
