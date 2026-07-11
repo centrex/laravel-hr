@@ -7,6 +7,7 @@ namespace Centrex\Hr\Http\Livewire\Entities;
 use Centrex\Hr\Support\HrEntityRegistry;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -22,6 +23,8 @@ class EntityFormPage extends Component
     public function mount(string $entity, ?int $recordId = null): void
     {
         $definition = HrEntityRegistry::definition($entity);
+
+        Gate::authorize(HrEntityRegistry::permissionsFor($entity)['manage']);
 
         $this->entity = $entity;
         $this->recordId = $recordId;

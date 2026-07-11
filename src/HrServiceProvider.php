@@ -73,6 +73,7 @@ class HrServiceProvider extends ServiceProvider
             'hr.departments.view',
             'hr.departments.manage',
             'hr.leave.view',
+            'hr.leave.manage',
             'hr.leave.request',
             'hr.leave.approve',
             'hr.attendance.view',

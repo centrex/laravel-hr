@@ -36,7 +36,7 @@
         <div class="overflow-x-auto">
             <table class="table">
                 <thead>
-                    <tr>
+                    <tr class="bg-base-300 text-xs text-base-content/60 uppercase tracking-wide border-b border-base-300">
                         <th>Date</th>
                         <th>Employee</th>
                         <th>Check In</th>
@@ -48,7 +48,7 @@
                 </thead>
                 <tbody>
                     @forelse ($records as $row)
-                        <tr>
+                        <tr class="even:bg-base-200/50 hover:bg-base-200">
                             <td>{{ \Illuminate\Support\Carbon::parse($row->work_date)->format('d M Y') }}</td>
                             <td>{{ $row->employee?->name }}</td>
                             <td>{{ $row->check_in ? \Illuminate\Support\Carbon::parse($row->check_in)->format('h:i A') : '—' }}</td>

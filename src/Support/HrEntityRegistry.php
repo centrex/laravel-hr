@@ -102,6 +102,20 @@ class HrEntityRegistry
         return array_keys(self::entities());
     }
 
+    /**
+     * Distinct view/manage gate pair for each entity, layered on top of the route-level
+     * `hr.employees.view` middleware so departments/designations/leave-types are additionally
+     * scoped to their own permission rather than only the blanket employees gate.
+     */
+    public static function permissionsFor(string $entity): array
+    {
+        return match ($entity) {
+            'departments', 'designations' => ['view' => 'hr.departments.view', 'manage' => 'hr.departments.manage'],
+            'leave-types' => ['view' => 'hr.leave.view', 'manage' => 'hr.leave.manage'],
+            default => ['view' => 'hr.employees.view', 'manage' => 'hr.employees.manage'],
+        };
+    }
+
     public static function definition(string $entity): array
     {
         $definition = self::entities()[$entity] ?? null;

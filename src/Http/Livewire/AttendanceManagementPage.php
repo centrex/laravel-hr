@@ -7,6 +7,7 @@ namespace Centrex\Hr\Http\Livewire;
 use Centrex\Hr\Facades\Hr;
 use Centrex\Hr\Models\{Attendance, Employee};
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\{Component, WithPagination};
 
@@ -38,6 +39,8 @@ class AttendanceManagementPage extends Component
 
     public function mount(): void
     {
+        Gate::authorize('hr.attendance.manage');
+
         $this->fromDate = now()->startOfMonth()->toDateString();
         $this->toDate = now()->toDateString();
     }

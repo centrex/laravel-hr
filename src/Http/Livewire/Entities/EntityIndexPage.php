@@ -6,6 +6,7 @@ namespace Centrex\Hr\Http\Livewire\Entities;
 
 use Centrex\Hr\Support\HrEntityRegistry;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Layout;
 use Livewire\{Component, WithPagination};
 
@@ -25,6 +26,8 @@ class EntityIndexPage extends Component
     public function mount(string $entity): void
     {
         HrEntityRegistry::definition($entity);
+
+        Gate::authorize(HrEntityRegistry::permissionsFor($entity)['view']);
 
         $this->entity = $entity;
     }

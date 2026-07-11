@@ -28,7 +28,7 @@
         <div class="overflow-x-auto">
             <table class="table">
                 <thead>
-                    <tr>
+                    <tr class="bg-base-300 text-xs text-base-content/60 uppercase tracking-wide border-b border-base-300">
                         <th>Type</th>
                         <th>From</th>
                         <th>To</th>
@@ -39,7 +39,7 @@
                 </thead>
                 <tbody>
                     @forelse ($requests as $request)
-                        <tr>
+                        <tr class="even:bg-base-200/50 hover:bg-base-200">
                             <td>{{ $request->leaveType?->name }}</td>
                             <td>{{ \Illuminate\Support\Carbon::parse($request->starts_at)->format('d M Y') }}</td>
                             <td>{{ \Illuminate\Support\Carbon::parse($request->ends_at)->format('d M Y') }}</td>
