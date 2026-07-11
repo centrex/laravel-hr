@@ -111,8 +111,8 @@ class HrEntityRegistry
     {
         return match ($entity) {
             'departments', 'designations' => ['view' => 'hr.departments.view', 'manage' => 'hr.departments.manage'],
-            'leave-types' => ['view' => 'hr.leave.view', 'manage' => 'hr.leave.manage'],
-            default => ['view' => 'hr.employees.view', 'manage' => 'hr.employees.manage'],
+            'leave-types'                 => ['view' => 'hr.leave.view', 'manage' => 'hr.leave.manage'],
+            default                       => ['view' => 'hr.employees.view', 'manage' => 'hr.employees.manage'],
         };
     }
 
