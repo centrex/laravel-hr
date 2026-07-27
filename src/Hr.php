@@ -29,7 +29,8 @@ class Hr
         $at = Carbon::parse($at ?? now());
         $date = $at->toDateString();
 
-        $attendance = Attendance::firstOrNew(['employee_id' => $employee->id, 'work_date' => $date]);
+        $attendance = $this->findAttendance($employee->id, $date)
+            ?? new Attendance(['employee_id' => $employee->id, 'work_date' => $date]);
 
         if ($attendance->exists && $attendance->check_in) {
             throw new AlreadyCheckedInException("Employee [{$employee->id}] already checked in on [{$date}].");
@@ -47,7 +48,7 @@ class Hr
         $at = Carbon::parse($at ?? now());
         $date = $at->toDateString();
 
-        $attendance = Attendance::where('employee_id', $employee->id)->where('work_date', $date)->first();
+        $attendance = $this->findAttendance($employee->id, $date);
 
         if (!$attendance || !$attendance->check_in) {
             throw new NotCheckedInException("Employee [{$employee->id}] has not checked in on [{$date}].");
@@ -72,7 +73,8 @@ class Hr
     {
         $date = Carbon::parse($data['work_date'])->toDateString();
 
-        $attendance = Attendance::firstOrNew(['employee_id' => $employee->id, 'work_date' => $date]);
+        $attendance = $this->findAttendance($employee->id, $date)
+            ?? new Attendance(['employee_id' => $employee->id, 'work_date' => $date]);
         $attendance->fill([
             'check_in'  => $data['check_in'] ?? $attendance->check_in,
             'check_out' => $data['check_out'] ?? $attendance->check_out,
@@ -109,7 +111,7 @@ class Hr
         }
 
         $hasAttendance = Attendance::where('employee_id', $employee->id)
-            ->where('work_date', $date->toDateString())
+            ->whereDate('work_date', $date->toDateString())
             ->whereNotNull('check_in')
             ->exists();
 
@@ -118,6 +120,17 @@ class Hr
         }
 
         return !$this->onApprovedLeave($employee, $date);
+    }
+
+    /**
+     * The `date` cast on Attendance::work_date serializes to "Y-m-d 00:00:00" on save (Eloquent's
+     * date cast always uses the connection's full datetime format for storage), so a plain
+     * where('work_date', 'Y-m-d') lookup never matches an existing row — whereDate() compares
+     * only the date portion and is required here.
+     */
+    private function findAttendance(int $employeeId, string $date): ?Attendance
+    {
+        return Attendance::where('employee_id', $employeeId)->whereDate('work_date', $date)->first();
     }
 
     private function onApprovedLeave(Employee $employee, \DateTimeInterface|string $date): bool

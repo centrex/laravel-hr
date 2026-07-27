@@ -1,0 +1,104 @@
+<?php
+
+declare(strict_types = 1);
+
+namespace Centrex\Hr\Support;
+
+use Centrex\Hr\Contracts\ZktecoClient;
+use Centrex\Hr\Exceptions\ZktecoNotConfiguredException;
+use Centrex\Hr\Facades\Hr;
+use Centrex\Hr\Models\{Employee, ZktecoDevice};
+use Centrex\Hr\Support\Zkteco\RatsZktecoClient;
+use Illuminate\Support\Carbon;
+
+/**
+ * Pulls attendance punches from a ZKTeco device and writes them through the same
+ * Hr::recordAttendance() upsert path the HR/admin manual-entry UI already uses, so worked
+ * hours computation and the (employee_id, work_date) idempotency guarantee are inherited
+ * for free. Punches are grouped per employee per day: earliest punch = check_in, latest
+ * (if there's more than one) = check_out — the standard punch-clock convention.
+ */
+class ZktecoSync
+{
+    /** @return array{device_id: int, synced: int, unmatched: array<string, int>} */
+    public function syncDevice(ZktecoDevice $device, ?ZktecoClient $client = null): array
+    {
+        $client ??= $this->makeClient($device);
+
+        $client->connect();
+
+        try {
+            $logs = $client->getAttendanceLogs();
+        } finally {
+            $client->disconnect();
+        }
+
+        $synced = 0;
+        $unmatched = [];
+
+        $punchesByEmployeeAndDay = collect($logs)->groupBy(
+            fn (array $log): string => $log['user_id'] . '|' . Carbon::parse($log['timestamp'])->toDateString(),
+        );
+
+        foreach ($punchesByEmployeeAndDay as $key => $punches) {
+            [$deviceUserId, $workDate] = explode('|', $key, 2);
+
+            $employee = Employee::where('zkteco_device_id', $device->id)
+                ->where('zkteco_user_id', $deviceUserId)
+                ->first();
+
+            if (!$employee) {
+                $unmatched[$deviceUserId] = ($unmatched[$deviceUserId] ?? 0) + $punches->count();
+
+                continue;
+            }
+
+            $timestamps = $punches->pluck('timestamp')
+                ->map(fn ($timestamp): Carbon => Carbon::parse($timestamp))
+                ->sort()
+                ->values();
+
+            $checkIn = $timestamps->first();
+            $checkOut = $timestamps->count() > 1 ? $timestamps->last() : null;
+
+            Hr::recordAttendance($employee, [
+                'work_date' => $workDate,
+                'check_in'  => $checkIn,
+                'check_out' => $checkOut,
+                'status'    => $this->statusFor($checkIn),
+            ]);
+
+            $synced++;
+        }
+
+        $device->forceFill(['last_synced_at' => now()])->save();
+
+        return [
+            'device_id' => $device->id,
+            'synced'    => $synced,
+            'unmatched' => $unmatched,
+        ];
+    }
+
+    private function statusFor(?Carbon $checkIn): string
+    {
+        $lateAfter = config('hr.zkteco.late_after');
+
+        if ($checkIn && $lateAfter && $checkIn->format('H:i') > $lateAfter) {
+            return 'late';
+        }
+
+        return 'present';
+    }
+
+    private function makeClient(ZktecoDevice $device): ZktecoClient
+    {
+        if (!class_exists('\\Rats\\Zkteco\\Lib\\ZKTeco')) {
+            throw new ZktecoNotConfiguredException(
+                'The rats/zkteco package is not installed. Run `composer require rats/zkteco` to sync from ZKTeco devices.',
+            );
+        }
+
+        return new RatsZktecoClient($device->ip_address, $device->port);
+    }
+}

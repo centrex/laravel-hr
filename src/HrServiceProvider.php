@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Centrex\Hr;
 
-use Centrex\Hr\Commands\HrCommand;
+use Centrex\Hr\Commands\{HrCommand, ZktecoSyncCommand};
 use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
 use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Models\Employee;
@@ -52,7 +52,7 @@ class HrServiceProvider extends ServiceProvider
                 __DIR__ . '/../resources/views' => resource_path('views/vendor/hr'),
             ], 'hr-views');
 
-            $this->commands([HrCommand::class]);
+            $this->commands([HrCommand::class, ZktecoSyncCommand::class]);
         }
     }
 

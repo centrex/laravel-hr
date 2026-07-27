@@ -38,6 +38,16 @@ return [
         'enabled' => env('HR_PAYROLL_SYNC_ENABLED', false),
     ],
 
+    // Pulls attendance punches from ZKTeco biometric devices via `hr:zkteco:sync`. Requires
+    // `composer require rats/zkteco` (suggested, not required, dependency) and at least one
+    // ZktecoDevice record with employees linked via zkteco_device_id/zkteco_user_id.
+    'zkteco' => [
+        'enabled' => env('HR_ZKTECO_ENABLED', false),
+        // Mark an employee 'late' if their earliest punch of the day is after this time
+        // (24h "H:i", e.g. "09:15"). Null disables late-marking — status stays 'present'.
+        'late_after' => env('HR_ZKTECO_LATE_AFTER'),
+    ],
+
     'per_page' => [
         'employees'      => 25,
         'departments'    => 25,

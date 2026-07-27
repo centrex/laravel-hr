@@ -20,6 +20,7 @@ class Employee extends Model
         'currency', 'bank_account_name', 'bank_account_number', 'tax_id',
         'emergency_contact_name', 'emergency_contact_phone',
         'payroll_profile_type', 'payroll_profile_id', 'is_active',
+        'zkteco_device_id', 'zkteco_user_id',
     ];
 
     protected $casts = [
@@ -69,6 +70,11 @@ class Employee extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function zktecoDevice(): BelongsTo
+    {
+        return $this->belongsTo(ZktecoDevice::class);
     }
 
     public function payrollProfile(): MorphTo

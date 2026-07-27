@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Centrex\Hr\Support;
 
-use Centrex\Hr\Models\{Department, Designation, Employee, LeaveType};
+use Centrex\Hr\Models\{Department, Designation, Employee, LeaveType, ZktecoDevice};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\{Arr, Str};
 use Illuminate\Validation\Rule;
@@ -64,6 +64,8 @@ class HrEntityRegistry
                     self::field('department_id', 'select', ['nullable', 'integer', 'exists:' . self::table(Department::class) . ',id'], null, Department::class, 'name'),
                     self::field('designation_id', 'select', ['nullable', 'integer', 'exists:' . self::table(Designation::class) . ',id'], null, Designation::class, 'name'),
                     self::field('manager_id', 'select', ['nullable', 'integer', 'exists:' . self::table(Employee::class) . ',id'], null, Employee::class, 'name'),
+                    self::field('zkteco_device_id', 'select', ['nullable', 'integer', 'exists:' . self::table(ZktecoDevice::class) . ',id'], null, ZktecoDevice::class, 'name'),
+                    self::field('zkteco_user_id', 'text', ['nullable', 'string', 'max:20']),
                     self::field('employment_type', 'text', ['required', 'string', 'max:50'], 'full_time'),
                     self::field('status', 'text', ['required', 'string', 'max:50'], 'active'),
                     self::field('joining_date', 'date', ['nullable', 'date']),
@@ -75,6 +77,21 @@ class HrEntityRegistry
                     self::field('tax_id', 'text', ['nullable', 'string', 'max:50']),
                     self::field('emergency_contact_name', 'text', ['nullable', 'string', 'max:200']),
                     self::field('emergency_contact_phone', 'text', ['nullable', 'string', 'max:50']),
+                    self::field('is_active', 'checkbox', ['boolean'], true),
+                ],
+            ],
+            'zkteco-devices' => [
+                'label'         => 'ZKTeco Devices',
+                'singular'      => 'ZKTeco Device',
+                'model'         => ZktecoDevice::class,
+                'search'        => ['name', 'ip_address', 'sbu_code'],
+                'index_columns' => ['name', 'ip_address', 'port', 'sbu_code', 'last_synced_at', 'is_active'],
+                'form_fields'   => [
+                    self::field('name', 'text', ['required', 'string', 'max:200']),
+                    self::field('ip_address', 'text', ['required', 'string', 'max:45']),
+                    self::field('port', 'number', ['required', 'integer', 'min:1', 'max:65535'], 4370),
+                    self::field('comm_key', 'number', ['nullable', 'integer']),
+                    self::field('sbu_code', 'text', ['nullable', 'string', 'max:50']),
                     self::field('is_active', 'checkbox', ['boolean'], true),
                 ],
             ],
@@ -112,6 +129,7 @@ class HrEntityRegistry
         return match ($entity) {
             'departments', 'designations' => ['view' => 'hr.departments.view', 'manage' => 'hr.departments.manage'],
             'leave-types'                 => ['view' => 'hr.leave.view', 'manage' => 'hr.leave.manage'],
+            'zkteco-devices'              => ['view' => 'hr.attendance.view', 'manage' => 'hr.attendance.manage'],
             default                       => ['view' => 'hr.employees.view', 'manage' => 'hr.employees.manage'],
         };
     }
