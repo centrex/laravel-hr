@@ -19,7 +19,7 @@ it('builds the three chart datasets and caches the result', function (): void {
         'employment_type' => 'full_time', 'status' => 'active', 'is_active' => true,
     ]);
 
-    $component = new HrChartsCard();
+    $component = new HrChartsCard;
 
     $charts = $component->charts();
 
@@ -37,7 +37,7 @@ it('builds the three chart datasets and caches the result', function (): void {
 });
 
 it('placeholder renders a skeleton', function (): void {
-    $component = new HrChartsCard();
+    $component = new HrChartsCard;
 
     expect($component->placeholder())->toBeString()->toContain('role="status"');
 });

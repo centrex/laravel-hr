@@ -77,7 +77,7 @@ class AttendanceManagementPage extends Component
     public function save(): void
     {
         $this->validate([
-            'employeeId' => 'required|integer|exists:' . (new Employee())->getTable() . ',id',
+            'employeeId' => 'required|integer|exists:' . (new Employee)->getTable() . ',id',
             'workDate'   => 'required|date',
             'checkIn'    => 'nullable|date_format:H:i',
             'checkOut'   => 'nullable|date_format:H:i',

@@ -60,7 +60,7 @@ class HrServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/config.php', 'hr');
 
-        $this->app->singleton(Hr::class, fn (): Hr => new Hr());
+        $this->app->singleton(Hr::class, fn (): Hr => new Hr);
         $this->app->alias(Hr::class, 'hr');
         $this->app->alias(Hr::class, 'laravel-hr');
     }

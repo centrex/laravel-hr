@@ -13,7 +13,7 @@ beforeEach(function (): void {
 it('uses the configured hr table prefix', function (): void {
     config()->set('hr.table_prefix', 'people_');
 
-    expect((new Employee())->getTable())->toBe('people_employees');
+    expect((new Employee)->getTable())->toBe('people_employees');
 });
 
 it('creates an employee with department and designation details', function (): void {

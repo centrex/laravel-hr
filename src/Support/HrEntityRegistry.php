@@ -149,7 +149,7 @@ class HrEntityRegistry
     {
         $modelClass = self::definition($entity)['model'];
 
-        return new $modelClass();
+        return new $modelClass;
     }
 
     public static function validationRules(string $entity, ?Model $record = null): array
@@ -219,7 +219,7 @@ class HrEntityRegistry
                 continue;
             }
 
-            $related = new $field['related_model']();
+            $related = new $field['related_model'];
             $options[$field['name']] = $related->newQuery()
                 ->orderBy($field['related_label'])
                 ->get(['id', $field['related_label']])
@@ -259,6 +259,6 @@ class HrEntityRegistry
 
     private static function table(string $modelClass): string
     {
-        return (new $modelClass())->getTable();
+        return (new $modelClass)->getTable();
     }
 }

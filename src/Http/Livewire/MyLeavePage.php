@@ -34,7 +34,7 @@ class MyLeavePage extends Component
     public function submitRequest(): void
     {
         $this->validate([
-            'leaveTypeId' => 'required|integer|exists:' . (new LeaveType())->getTable() . ',id',
+            'leaveTypeId' => 'required|integer|exists:' . (new LeaveType)->getTable() . ',id',
             'startsAt'    => 'required|date',
             'endsAt'      => 'required|date|after_or_equal:startsAt',
             'reason'      => 'nullable|string|max:1000',
