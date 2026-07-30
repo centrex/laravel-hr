@@ -142,57 +142,11 @@
     </div>
 
     {{-- ── Charts row ──────────────────────────────────────────────────────────── --}}
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        {{-- Attendance trend --}}
-        <x-tallui-card title="Attendance — Last 30 Days" icon="o-chart-bar" :shadow="true">
-            @if (!empty($attendanceChart['series'][0]['data']) && array_sum($attendanceChart['series'][0]['data']) > 0)
-                <livewire:tallui-area-chart
-                    :series="$attendanceChart['series']"
-                    :categories="$attendanceChart['categories']"
-                    :height="220"
-                />
-            @else
-                <x-tallui-empty-state
-                    title="No attendance data"
-                    description="Attendance records will appear here once logged."
-                    icon="o-clock"
-                    size="sm"
-                />
-            @endif
-        </x-tallui-card>
+    <livewire:hr-charts-card lazy />
 
-        {{-- Headcount by department --}}
-        <x-tallui-card title="Headcount by Department" icon="o-building-office" :shadow="true">
-            @if (!empty($deptChart['categories']))
-                <livewire:tallui-bar-chart
-                    :series="$deptChart['series']"
-                    :categories="$deptChart['categories']"
-                    :height="220"
-                />
-            @else
-                <x-tallui-empty-state
-                    title="No departments"
-                    description="Add departments and employees to see headcount distribution."
-                    icon="o-building-office"
-                    size="sm"
-                />
-            @endif
-        </x-tallui-card>
-    </div>
-
-    {{-- Leave distribution chart --}}
-    @if (array_sum($leaveChart['series']) > 0)
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <x-tallui-card title="Leave Status — {{ now()->year }}" icon="o-chart-pie" :shadow="true">
-            <livewire:tallui-pie-chart
-                :series="$leaveChart['series']"
-                :labels="$leaveChart['categories']"
-                :height="220"
-            />
-        </x-tallui-card>
-
-        {{-- Recent joiners --}}
-        <x-tallui-card title="Recent Joiners" icon="o-user-plus" :shadow="true" class="lg:col-span-2">
+    {{-- Recent joiners --}}
+    <div class="grid grid-cols-1 gap-4 mb-6">
+        <x-tallui-card title="Recent Joiners" icon="o-user-plus" :shadow="true">
             @forelse ($recentJoiners as $emp)
                 <x-tallui-list-item
                     :title="$emp->name"
@@ -214,7 +168,6 @@
             @endforelse
         </x-tallui-card>
     </div>
-    @endif
 
     {{-- ── Recent Leave Requests ──────────────────────────────────────────────── --}}
     <x-tallui-card title="Recent Leave Requests" icon="o-inbox-stack" :shadow="true" padding="none">

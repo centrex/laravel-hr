@@ -6,7 +6,6 @@ namespace Centrex\Hr\Http\Livewire;
 
 use Centrex\Hr\Models\{Attendance, Department, Designation, Employee, LeaveRequest};
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -73,79 +72,14 @@ class HrDashboard extends Component
         ];
     }
 
-    // ── Charts ────────────────────────────────────────────────────────────────
-
-    private function headcountByDepartment(): array
-    {
-        $rows = Department::withCount(['employees' => fn ($q) => $q->where('is_active', true)])
-            ->where('is_active', true)
-            ->orderByDesc('employees_count')
-            ->limit(10)
-            ->get();
-
-        return [
-            'series'     => [['name' => 'Employees', 'data' => $rows->pluck('employees_count')->toArray()]],
-            'categories' => $rows->pluck('name')->toArray(),
-        ];
-    }
-
-    private function attendanceTrend(): array
-    {
-        $prefix = config('hr.table_prefix', 'hr_');
-        $connection = config('hr.drivers.database.connection', config('database.default'));
-        $days = 30;
-        $from = now()->subDays($days - 1)->startOfDay();
-
-        $rows = DB::connection($connection)
-            ->table("{$prefix}attendances")
-            ->where('work_date', '>=', $from->toDateString())
-            ->where('status', 'present')
-            ->selectRaw('DATE(work_date) as day, COUNT(*) as cnt')
-            ->groupBy('day')
-            ->orderBy('day')
-            ->get()
-            ->keyBy('day');
-
-        $categories = [];
-        $data = [];
-
-        for ($i = $days - 1; $i >= 0; $i--) {
-            $date = now()->subDays($i)->toDateString();
-            $categories[] = now()->subDays($i)->format('d M');
-            $data[] = (int) ($rows->get($date)?->cnt ?? 0);
-        }
-
-        return [
-            'series'     => [['name' => 'Present', 'data' => $data]],
-            'categories' => $categories,
-        ];
-    }
-
-    private function leaveStatusDistribution(): array
-    {
-        $rows = LeaveRequest::whereYear('starts_at', now()->year)
-            ->selectRaw('status, COUNT(*) as cnt')
-            ->groupBy('status')
-            ->pluck('cnt', 'status');
-
-        $statuses = ['pending', 'approved', 'rejected', 'cancelled'];
-        $counts = $rows->toArray();
-
-        return [
-            'series'     => array_map(fn (string $s): int => (int) ($counts[$s] ?? 0), $statuses),
-            'categories' => array_map('ucfirst', $statuses),
-        ];
-    }
-
     public function render(): View
     {
+        // Attendance/Headcount/Leave charts moved to their own lazy-loaded HrChartsCard
+        // component — attendanceTrend() is a 30-day raw groupBy that grows with the
+        // attendance table, and none of the three need to block the rest of the dashboard.
         $headcount = $this->headcountStats();
         $leaveStats = $this->leaveStats();
         $attendanceStats = $this->attendanceStats();
-
-        $deptChart = $this->headcountByDepartment();
-        $attendanceChart = $this->attendanceTrend();
-        $leaveChart = $this->leaveStatusDistribution();
 
         $recentLeaves = LeaveRequest::with(['employee', 'leaveType'])
             ->latest()
@@ -165,9 +99,6 @@ class HrDashboard extends Component
             'headcount',
             'leaveStats',
             'attendanceStats',
-            'deptChart',
-            'attendanceChart',
-            'leaveChart',
             'recentLeaves',
             'recentJoiners',
             'departments',

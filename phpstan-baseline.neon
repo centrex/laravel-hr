@@ -1,0 +1,121 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot call method hasRole\\(\\) on class\\-string\\|object\\.$#"
+			count: 1
+			path: src/HrServiceProvider.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\HrServiceProvider\\:\\:normalizeAdminRoles\\(\\) has parameter \\$roles with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/HrServiceProvider.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\HrServiceProvider\\:\\:normalizeAdminRoles\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/HrServiceProvider.php
+
+		-
+			message: "#^Parameter \\#1 \\$roles of method Centrex\\\\Hr\\\\HrServiceProvider\\:\\:normalizeAdminRoles\\(\\) expects array\\|string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/HrServiceProvider.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrChartsCard\\:\\:attendanceTrend\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrChartsCard\\:\\:charts\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 3
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrChartsCard\\:\\:charts\\(\\) should return array\\{deptChart\\: array, attendanceChart\\: array, leaveChart\\: array\\} but returns mixed\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrChartsCard\\:\\:headcountByDepartment\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrChartsCard\\:\\:leaveStatusDistribution\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Department\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\Department, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Department\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\Department, 'is_active' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Parameter \\#1 \\$name of static method Illuminate\\\\Database\\\\DatabaseManager\\:\\:connection\\(\\) expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Part \\$prefix \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrChartsCard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrDashboard\\:\\:attendanceStats\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrDashboard\\:\\:headcountStats\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Method Centrex\\\\Hr\\\\Http\\\\Livewire\\\\HrDashboard\\:\\:leaveStats\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Attendance\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\Attendance, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Attendance\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\Attendance, 'status' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Employee\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\Employee, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Employee\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\Employee, 'is_active' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\LeaveRequest\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\LeaveRequest, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\LeaveRequest\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\LeaveRequest, 'ends_at' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\LeaveRequest\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\LeaveRequest, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\LeaveRequest\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\LeaveRequest, 'starts_at' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of static method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Attendance\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\Attendance, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Attendance\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\Attendance, 'work_date' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of static method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Department\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\Department, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Department\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\Department, 'is_active' given\\.$#"
+			count: 1
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of static method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Employee\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\Employee, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\Employee\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\Employee, 'is_active' given\\.$#"
+			count: 3
+			path: src/Http/Livewire/HrDashboard.php
+
+		-
+			message: "#^Parameter \\#1 \\$column of static method Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\LeaveRequest\\>\\:\\:where\\(\\) expects array\\<int\\|model property of Centrex\\\\Hr\\\\Models\\\\LeaveRequest, mixed\\>\\|\\(Closure\\(Illuminate\\\\Database\\\\Eloquent\\\\Builder\\<Centrex\\\\Hr\\\\Models\\\\LeaveRequest\\>\\)\\: mixed\\)\\|Illuminate\\\\Contracts\\\\Database\\\\Query\\\\Expression\\|model property of Centrex\\\\Hr\\\\Models\\\\LeaveRequest, 'status' given\\.$#"
+			count: 4
+			path: src/Http/Livewire/HrDashboard.php
