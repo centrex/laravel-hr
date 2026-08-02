@@ -33,7 +33,7 @@ it('saves a new entity via EntityFormPage::save() without throwing', function ()
     // supplied by the host app in production). Livewire's container-swap that caused the
     // original crash is orthogonal to that — the crash happened inside save() itself,
     // enforced by PHP's own return-type check, before any rendering occurs.
-    $component = new EntityFormPage;
+    $component = new EntityFormPage();
     $component->mount('departments');
     $component->form['code'] = 'OPS';
     $component->form['name'] = 'Operations';
@@ -41,4 +41,36 @@ it('saves a new entity via EntityFormPage::save() without throwing', function ()
     $component->save();
 
     expect(Department::query()->where('code', 'OPS')->exists())->toBeTrue();
+});
+
+it('exposes validation errors under the plain field name, not a "form." prefix', function (): void {
+    // Regression test for a silent-failure bug: the view checks
+    // $errors->first($field['name']) (e.g. $errors->first('code')), but save()'s validator
+    // call validates a plain $payload array keyed by unprefixed field names — so the
+    // resulting ValidationException's error bag is ALSO keyed unprefixed ('code'), not
+    // 'form.code'. The view previously checked $errors->first('form.' . $field['name']),
+    // which never matched, so a failed save (e.g. duplicate code) showed no error at all —
+    // the form just silently didn't save, with nothing telling the user why.
+    Department::query()->create(['code' => 'DUP', 'name' => 'Existing']);
+
+    $component = new EntityFormPage();
+    $component->mount('departments');
+    $component->form['code'] = 'DUP';
+    $component->form['name'] = 'Another';
+
+    try {
+        $component->save();
+        $this->fail('Expected a ValidationException for the duplicate code.');
+    } catch (Illuminate\Validation\ValidationException $e) {
+        expect($e->errors())->toHaveKey('code');
+    }
+
+    expect(Department::query()->where('name', 'Another')->exists())->toBeFalse();
+});
+
+it('form-page.blade.php checks errors under the plain field name', function (): void {
+    $view = file_get_contents(__DIR__ . '/../../resources/views/livewire/entities/form-page.blade.php');
+
+    expect($view)->not->toContain("errors->first('form.'")
+        ->not->toContain("errors->has('form.'");
 });

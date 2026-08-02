@@ -6,7 +6,22 @@ _Last checked: 2026-08-02_
 
 ## Failing tests
 
-No failing tests. `vendor/bin/pest -p` (parallel, 12 processes): **16 passed** (37 assertions). Coverage of `tests/` is thin: `tests/ExampleTest.php`, `tests/ArchTest.php`, `tests/Feature/HrManagementTest.php`, `tests/Feature/HrChartsCardTest.php`, `tests/Feature/ZktecoSyncTest.php`, and (added 2026-08-02) `tests/Feature/EntityFormPageRedirectTest.php` — still nothing dedicated to leave approvals or attendance beyond what those files cover.
+No failing tests. `vendor/bin/pest -p` (parallel, 12 processes): **18 passed** (41 assertions). Coverage of `tests/` is thin: `tests/ExampleTest.php`, `tests/ArchTest.php`, `tests/Feature/HrManagementTest.php`, `tests/Feature/HrChartsCardTest.php`, `tests/Feature/ZktecoSyncTest.php`, and (added 2026-08-02) `tests/Feature/EntityFormPageRedirectTest.php` — still nothing dedicated to leave approvals or attendance beyond what those files cover.
+
+**Fixed** (2026-08-02, reported as "employee create not successful and showing no message"):
+`resources/views/livewire/entities/form-page.blade.php` checked
+`$errors->first('form.' . $field['name'])` / `$errors->has('form.' . $field['name'])` for
+every field, but `EntityFormPage::save()`'s `validator($payload, ...)->validate()` call
+validates a plain array keyed by **unprefixed** field names (`code`, `name`, ...) — so any
+`ValidationException` it threw populated the error bag under `code`/`name`/etc., never under
+`form.code`/`form.name`. The view's lookup never matched, so a failed save (e.g. a duplicate
+`code`, which the "employees" entity uniquely validates) produced **no visible error at all**
+— the form just silently didn't save, with nothing telling the user why. Confirmed the error
+bag's actual keys via a direct reproduction (`tests/Feature/EntityFormPageRedirectTest.php`'s
+new "exposes validation errors under the plain field name" test) before fixing. `centrex/laravel-inventory`'s
+equivalent `EntityFormPage`/view already used the correct unprefixed form (`$errors->first($field['name'])`)
+— used as the reference fix. The identical bug existed in `laravel-payroll`'s own
+`form-page.blade.php` (same original scaffold) — fixed there too.
 
 **Fixed** (2026-08-02): `src/Http/Livewire/Entities/EntityFormPage.php::save()` declared
 `: \Illuminate\Http\RedirectResponse` and did `return redirect()->route(...)`. Inside a real
