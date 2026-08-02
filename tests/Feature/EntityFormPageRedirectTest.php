@@ -33,7 +33,7 @@ it('saves a new entity via EntityFormPage::save() without throwing', function ()
     // supplied by the host app in production). Livewire's container-swap that caused the
     // original crash is orthogonal to that — the crash happened inside save() itself,
     // enforced by PHP's own return-type check, before any rendering occurs.
-    $component = new EntityFormPage();
+    $component = new EntityFormPage;
     $component->mount('departments');
     $component->form['code'] = 'OPS';
     $component->form['name'] = 'Operations';
@@ -53,7 +53,7 @@ it('exposes validation errors under the plain field name, not a "form." prefix',
     // the form just silently didn't save, with nothing telling the user why.
     Department::query()->create(['code' => 'DUP', 'name' => 'Existing']);
 
-    $component = new EntityFormPage();
+    $component = new EntityFormPage;
     $component->mount('departments');
     $component->form['code'] = 'DUP';
     $component->form['name'] = 'Another';
