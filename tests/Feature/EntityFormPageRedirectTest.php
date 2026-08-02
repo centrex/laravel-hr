@@ -33,7 +33,7 @@ it('saves a new entity via EntityFormPage::save() without throwing', function ()
     // supplied by the host app in production). Livewire's container-swap that caused the
     // original crash is orthogonal to that — the crash happened inside save() itself,
     // enforced by PHP's own return-type check, before any rendering occurs.
-    $component = new EntityFormPage();
+    $component = new EntityFormPage;
     $component->mount('departments');
     $component->form['code'] = 'OPS';
     $component->form['name'] = 'Operations';
