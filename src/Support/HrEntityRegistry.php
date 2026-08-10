@@ -51,7 +51,9 @@ class HrEntityRegistry
                 'model'           => Employee::class,
                 'search'          => ['code', 'name', 'email', 'phone'],
                 'index_columns'   => ['code', 'name', 'email', 'employment_type', 'status', 'monthly_salary', 'currency', 'is_active'],
-                'quantity_filter' => ['column' => 'monthly_salary', 'label' => 'Monthly Salary'],
+                // monthly_salary is encrypted at rest (see 2026_08_11_000001_encrypt_sensitive_hr_employee_columns),
+                // so it can no longer be range-filtered at the SQL level — the quantity_filter that used to live
+                // here is gone; it still displays fine above since the model decrypts it on attribute access.
                 'form_fields'     => [
                     self::field('code', 'text', ['required', 'string', 'max:30']),
                     self::field('user_id', 'number', ['nullable', 'integer', 'min:1']),
