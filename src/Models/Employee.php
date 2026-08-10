@@ -24,8 +24,8 @@ class Employee extends Model
     ];
 
     protected $casts = [
-        'joining_date'        => 'date',
-        'termination_date'    => 'date',
+        'joining_date'     => 'date',
+        'termination_date' => 'date',
         // Stored encrypted at rest (see 2026_08_11_000001_encrypt_sensitive_hr_employee_columns) —
         // monthly_salary reads back as a numeric string, not a decimal-cast value, since it's no
         // longer queryable/sortable at the SQL level.
