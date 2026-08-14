@@ -7,6 +7,7 @@ namespace Centrex\Hr\Commands;
 use Centrex\Hr\Models\ZktecoDevice;
 use Centrex\Hr\Support\ZktecoSync;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class ZktecoSyncCommand extends Command
 {
@@ -43,6 +44,13 @@ class ZktecoSyncCommand extends Command
             } catch (\Throwable $e) {
                 $hadFailure = true;
                 $rows[] = [$device->id, $device->name, 'ERROR', $e->getMessage()];
+
+                Log::error('hr:zkteco:sync failed for device', [
+                    'device_id'   => $device->id,
+                    'device_name' => $device->name,
+                    'ip_address'  => $device->ip_address,
+                    'error'       => $e->getMessage(),
+                ]);
             }
         }
 
