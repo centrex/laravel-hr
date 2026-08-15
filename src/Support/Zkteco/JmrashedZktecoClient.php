@@ -29,6 +29,8 @@ class JmrashedZktecoClient implements ZktecoClient
      */
     public function __construct(string $ipAddress, int $port = 4370, int $connectTimeoutSeconds = 5)
     {
+        $this->configureVendorLogPath();
+
         $class = '\\Jmrashed\\Zkteco\\Lib\\ZKTeco';
         $this->device = new $class($ipAddress, $port);
 
@@ -59,5 +61,31 @@ class JmrashedZktecoClient implements ZktecoClient
             'timestamp' => Carbon::parse($row['timestamp']),
             'state'     => (int) ($row['state'] ?? 0),
         ], $logs);
+    }
+
+    /**
+     * jmrashed/zkteco hardcodes its own error log to a `logs/` subdirectory inside its own
+     * package folder (vendor/jmrashed/zkteco/src/Lib/logs/error.log) — a directory Composer
+     * never creates, since an empty dir isn't shipped in the package's git history. It's
+     * called from inside the UDP retry loop that recData() falls back to whenever the device
+     * drops packets mid-transfer (a real condition, not just a config error), so leaving this
+     * unset turns an ordinary packet-loss retry into a fatal "Failed to open stream" once the
+     * retry budget is exhausted. Util::logger() checks defined('ZK_LIB_LOG') first and uses
+     * that path instead when set — must be defined before the vendor class is ever
+     * constructed, and only once per process (redefining a constant is a fatal error).
+     */
+    private function configureVendorLogPath(): void
+    {
+        if (defined('ZK_LIB_LOG')) {
+            return;
+        }
+
+        $logPath = storage_path('logs/zkteco.log');
+
+        if (!is_dir(dirname($logPath))) {
+            mkdir(dirname($logPath), 0755, true);
+        }
+
+        define('ZK_LIB_LOG', $logPath);
     }
 }
