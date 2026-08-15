@@ -32,38 +32,49 @@ class ZktecoSyncCommand extends Command
         }
 
         $this->info('Syncing ' . $devices->count() . ' device(s)...');
+        $this->newLine();
 
         $rows = [];
         $hadFailure = false;
 
         foreach ($devices as $device) {
-            try {
-                $this->info("Syncing device {$device->id} ({$device->name})... on {$device->ip_address}");
+            $summary = null;
+            $error = null;
 
-                $summary = $sync->syncDevice($device);
-                $rows[] = [
-                    $device->id,
-                    $device->name,
-                    $summary['synced'],
-                    array_sum($summary['unmatched']),
-                ];
+            $this->components->task(
+                "Device {$device->id} ({$device->name}) on {$device->ip_address}",
+                function () use ($sync, $device, &$summary, &$error): bool {
+                    try {
+                        $summary = $sync->syncDevice($device);
 
-                $this->info("Synced device {$device->id} ({$device->name}): {$summary['synced']} punches, " . array_sum($summary['unmatched']) . ' unmatched.');
-            } catch (\Throwable $e) {
+                        return true;
+                    } catch (\Throwable $e) {
+                        $error = $e;
+
+                        return false;
+                    }
+                },
+            );
+
+            if ($summary === null) {
                 $hadFailure = true;
-                $rows[] = [$device->id, $device->name, 'ERROR', $e->getMessage()];
+                $message = $error?->getMessage() ?? 'Unknown error';
+                $rows[] = [$device->id, $device->name, 'ERROR', $message];
 
                 Log::error('hr:zkteco:sync failed for device', [
                     'device_id'   => $device->id,
                     'device_name' => $device->name,
                     'ip_address'  => $device->ip_address,
-                    'error'       => $e->getMessage(),
+                    'error'       => $message,
                 ]);
+
+                continue;
             }
 
-            $this->newLine();
+            $rows[] = [$device->id, $device->name, $summary['synced'], array_sum($summary['unmatched'])];
         }
 
+        $this->newLine();
         $this->table(['Device ID', 'Name', 'Synced', 'Unmatched/Error'], $rows);
         $this->info('Sync completed.');
 
