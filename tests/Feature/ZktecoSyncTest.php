@@ -3,7 +3,7 @@
 declare(strict_types = 1);
 
 use Centrex\Hr\Contracts\ZktecoClient;
-use Centrex\Hr\Exceptions\ZktecoNotConfiguredException;
+use Centrex\Hr\Exceptions\{ZktecoConnectionException, ZktecoNotConfiguredException};
 use Centrex\Hr\Facades\Hr;
 use Centrex\Hr\Models\{Attendance, Employee, ZktecoDevice};
 use Centrex\Hr\Support\ZktecoSync;
@@ -157,6 +157,44 @@ it('throws when rats/zkteco is not installed and no client is supplied', functio
 
     app(ZktecoSync::class)->syncDevice($device);
 })->throws(ZktecoNotConfiguredException::class);
+
+it('throws a clear connection error naming the device when connect() fails, without touching attendance logs', function (): void {
+    $device = ZktecoDevice::query()->create([
+        'name'       => 'Warehouse Gate',
+        'ip_address' => '192.168.1.250',
+        'port'       => 4370,
+    ]);
+
+    $client = new class() implements ZktecoClient
+    {
+        public bool $logsFetched = false;
+
+        public function connect(): bool
+        {
+            return false;
+        }
+
+        public function disconnect(): void {}
+
+        public function getAttendanceLogs(): array
+        {
+            $this->logsFetched = true;
+
+            return [];
+        }
+    };
+
+    try {
+        app(ZktecoSync::class)->syncDevice($device, $client);
+        $this->fail('Expected ZktecoConnectionException to be thrown.');
+    } catch (ZktecoConnectionException $e) {
+        expect($e->getMessage())
+            ->toContain('Warehouse Gate')
+            ->toContain('192.168.1.250:4370');
+    }
+
+    expect($client->logsFetched)->toBeFalse();
+});
 
 it('enforces one device-user-id per device via a unique constraint', function (): void {
     $device = ZktecoDevice::query()->create(['name' => 'Main Gate', 'ip_address' => '192.168.1.201']);

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Centrex\Hr\Support;
 
 use Centrex\Hr\Contracts\ZktecoClient;
-use Centrex\Hr\Exceptions\ZktecoNotConfiguredException;
+use Centrex\Hr\Exceptions\{ZktecoConnectionException, ZktecoNotConfiguredException};
 use Centrex\Hr\Facades\Hr;
 use Centrex\Hr\Models\{Employee, ZktecoDevice};
 use Centrex\Hr\Support\Zkteco\RatsZktecoClient;
@@ -25,7 +25,12 @@ class ZktecoSync
     {
         $client ??= $this->makeClient($device);
 
-        $client->connect();
+        if (!$client->connect()) {
+            throw new ZktecoConnectionException(
+                "Could not connect to ZKTeco device \"{$device->name}\" at {$device->ip_address}:{$device->port}. " .
+                'Check that the device is powered on, reachable on the network, and that the IP/port are correct.',
+            );
+        }
 
         try {
             $logs = $client->getAttendanceLogs();
