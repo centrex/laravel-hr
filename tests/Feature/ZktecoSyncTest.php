@@ -165,7 +165,7 @@ it('throws a clear connection error naming the device when connect() fails, with
         'port'       => 4370,
     ]);
 
-    $client = new class() implements ZktecoClient
+    $client = new class implements ZktecoClient
     {
         public bool $logsFetched = false;
 
