@@ -17,6 +17,8 @@ class ZktecoSyncCommand extends Command
 
     public function handle(ZktecoSync $sync): int
     {
+        $this->info('Syncing ZKTeco devices...');
+
         $deviceIds = $this->option('device');
 
         $devices = $deviceIds !== []
@@ -29,11 +31,15 @@ class ZktecoSyncCommand extends Command
             return self::SUCCESS;
         }
 
+        $this->info('Syncing ' . $devices->count() . ' device(s)...');
+
         $rows = [];
         $hadFailure = false;
 
         foreach ($devices as $device) {
             try {
+                $this->info("Syncing device {$device->id} ({$device->name})... on {$device->ip_address}");
+
                 $summary = $sync->syncDevice($device);
                 $rows[] = [
                     $device->id,
@@ -41,6 +47,8 @@ class ZktecoSyncCommand extends Command
                     $summary['synced'],
                     array_sum($summary['unmatched']),
                 ];
+
+                $this->info("Synced device {$device->id} ({$device->name}): {$summary['synced']} punches, " . array_sum($summary['unmatched']) . ' unmatched.');
             } catch (\Throwable $e) {
                 $hadFailure = true;
                 $rows[] = [$device->id, $device->name, 'ERROR', $e->getMessage()];
@@ -52,9 +60,12 @@ class ZktecoSyncCommand extends Command
                     'error'       => $e->getMessage(),
                 ]);
             }
+
+            $this->newLine();
         }
 
         $this->table(['Device ID', 'Name', 'Synced', 'Unmatched/Error'], $rows);
+        $this->info('Sync completed.');
 
         return $hadFailure ? self::FAILURE : self::SUCCESS;
     }
