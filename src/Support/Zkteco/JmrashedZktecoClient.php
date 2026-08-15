@@ -19,32 +19,45 @@ class JmrashedZktecoClient implements ZktecoClient
 {
     private object $device;
 
+    private readonly int $transferTimeoutSeconds;
+
     /**
-     * $connectTimeoutSeconds overrides the vendor SDK's hardcoded 60.5s UDP socket receive
-     * timeout (Jmrashed\Zkteco\Lib\ZKTeco::__construct()) — without this, an unreachable device
-     * makes connect() block for a full minute before returning false, which is indistinguishable
-     * from `hr:zkteco:sync` hanging. $device->_zkclient is the vendor class's public `Socket`
-     * resource; overriding SO_RCVTIMEO on it directly is the only way to shorten this, since
-     * the vendor constructor doesn't accept a timeout parameter.
+     * The vendor SDK's hardcoded 60.5s UDP socket receive timeout
+     * (Jmrashed\Zkteco\Lib\ZKTeco::__construct()) is reused for both connect() (a single
+     * read) and every chunk read during the attendance log transfer (which retries up to 10
+     * times internally on a stall). Those two phases want different timeouts: connect()
+     * should fail fast against an unreachable device, but the transfer needs more per-attempt
+     * patience — a large log over a lossy link can genuinely take more than a few seconds per
+     * chunk even though the device is alive. $connectTimeoutSeconds is applied up front (short);
+     * connect() re-applies $transferTimeoutSeconds (longer) once the device has actually
+     * responded. $device->_zkclient is the vendor class's public `Socket` resource — overriding
+     * SO_RCVTIMEO on it directly is the only lever available, since the vendor constructor
+     * doesn't accept a timeout parameter.
      */
-    public function __construct(string $ipAddress, int $port = 4370, int $connectTimeoutSeconds = 5)
-    {
+    public function __construct(
+        string $ipAddress,
+        int $port = 4370,
+        int $connectTimeoutSeconds = 5,
+        int $transferTimeoutSeconds = 20,
+    ) {
+        $this->transferTimeoutSeconds = $transferTimeoutSeconds;
         $this->configureVendorLogPath();
 
         $class = '\\Jmrashed\\Zkteco\\Lib\\ZKTeco';
         $this->device = new $class($ipAddress, $port);
 
-        if (isset($this->device->_zkclient) && $this->device->_zkclient !== false) {
-            socket_set_option($this->device->_zkclient, SOL_SOCKET, SO_RCVTIMEO, [
-                'sec'  => $connectTimeoutSeconds,
-                'usec' => 0,
-            ]);
-        }
+        $this->setSocketTimeout($connectTimeoutSeconds);
     }
 
     public function connect(): bool
     {
-        return (bool) $this->device->connect();
+        $connected = (bool) $this->device->connect();
+
+        if ($connected) {
+            $this->setSocketTimeout($this->transferTimeoutSeconds);
+        }
+
+        return $connected;
     }
 
     public function disconnect(): void
@@ -87,5 +100,15 @@ class JmrashedZktecoClient implements ZktecoClient
         }
 
         define('ZK_LIB_LOG', $logPath);
+    }
+
+    private function setSocketTimeout(int $seconds): void
+    {
+        if (isset($this->device->_zkclient) && $this->device->_zkclient !== false) {
+            socket_set_option($this->device->_zkclient, SOL_SOCKET, SO_RCVTIMEO, [
+                'sec'  => $seconds,
+                'usec' => 0,
+            ]);
+        }
     }
 }

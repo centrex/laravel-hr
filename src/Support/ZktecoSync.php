@@ -108,6 +108,7 @@ class ZktecoSync
             $device->ip_address,
             $device->port,
             (int) config('hr.zkteco.connect_timeout', 5),
+            (int) config('hr.zkteco.transfer_timeout', 20),
         );
     }
 }

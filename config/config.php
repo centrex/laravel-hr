@@ -46,11 +46,17 @@ return [
         // Mark an employee 'late' if their earliest punch of the day is after this time
         // (24h "H:i", e.g. "09:15"). Null disables late-marking — status stays 'present'.
         'late_after' => env('HR_ZKTECO_LATE_AFTER'),
-        // jmrashed/zkteco talks UDP and defaults to a 60.5s socket receive timeout — an
-        // unreachable device (powered off, wrong IP, firewalled) makes connect() block for
-        // that long before failing, which reads as `hr:zkteco:sync` hanging. Overridden down
-        // to this many seconds per device so a dead device fails fast instead.
+        // jmrashed/zkteco talks UDP and defaults to a 60.5s socket receive timeout, reused
+        // for both the initial connect() probe and every chunk read during the attendance
+        // log transfer. connect() only ever does a single read, so a short timeout here
+        // fails fast against an unreachable device (powered off, wrong IP, firewalled)
+        // instead of blocking `hr:zkteco:sync` for a full minute per dead device.
         'connect_timeout' => (int) env('HR_ZKTECO_CONNECT_TIMEOUT', 5),
+        // The data transfer retries up to 10 times per stalled chunk, so it needs more
+        // per-attempt patience than the connect probe — a large attendance log (hundreds of
+        // KB) over a lossy link can genuinely need more than a few seconds per chunk even
+        // though the device is alive and responding. Applied only after connect() succeeds.
+        'transfer_timeout' => (int) env('HR_ZKTECO_TRANSFER_TIMEOUT', 20),
     ],
 
     'per_page' => [
