@@ -39,13 +39,18 @@ return [
     ],
 
     // Pulls attendance punches from ZKTeco biometric devices via `hr:zkteco:sync`. Requires
-    // `composer require rats/zkteco` (suggested, not required, dependency) and at least one
+    // `composer require jmrashed/zkteco` (suggested, not required, dependency) and at least one
     // ZktecoDevice record with employees linked via zkteco_device_id/zkteco_user_id.
     'zkteco' => [
         'enabled' => env('HR_ZKTECO_ENABLED', false),
         // Mark an employee 'late' if their earliest punch of the day is after this time
         // (24h "H:i", e.g. "09:15"). Null disables late-marking — status stays 'present'.
         'late_after' => env('HR_ZKTECO_LATE_AFTER'),
+        // jmrashed/zkteco talks UDP and defaults to a 60.5s socket receive timeout — an
+        // unreachable device (powered off, wrong IP, firewalled) makes connect() block for
+        // that long before failing, which reads as `hr:zkteco:sync` hanging. Overridden down
+        // to this many seconds per device so a dead device fails fast instead.
+        'connect_timeout' => (int) env('HR_ZKTECO_CONNECT_TIMEOUT', 5),
     ],
 
     'per_page' => [

@@ -20,7 +20,7 @@
         "php": "^8.3",
         "illuminate/database": "^11.0|^12.0|^13.0",
         "illuminate/support": "^11.0|^12.0|^13.0",
-        "rats/zkteco": "^002.0"
+        "jmrashed/zkteco": "^2.1"
     },
     "require-dev": {
         "larastan/larastan": "^2.0",
@@ -38,7 +38,7 @@
         "spatie/laravel-ray": "^1.26"
     },
     "suggest": {
-        "rats/zkteco": "Required to run `hr:zkteco:sync` and pull attendance punches from ZKTeco biometric devices."
+        "jmrashed/zkteco": "Required to run `hr:zkteco:sync` and pull attendance punches from ZKTeco biometric devices."
     },
     "autoload": {
         "psr-4": {

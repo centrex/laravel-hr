@@ -152,7 +152,7 @@ it('preserves manual notes already recorded for a day when syncing', function ()
         ->and(Carbon::parse($attendance->check_in)->format('H:i'))->toBe('09:00');
 });
 
-it('throws when rats/zkteco is not installed and no client is supplied', function (): void {
+it('throws when jmrashed/zkteco is not installed and no client is supplied', function (): void {
     $device = ZktecoDevice::query()->create(['name' => 'Main Gate', 'ip_address' => '192.168.1.201']);
 
     app(ZktecoSync::class)->syncDevice($device);
@@ -165,7 +165,7 @@ it('throws a clear connection error naming the device when connect() fails, with
         'port'       => 4370,
     ]);
 
-    $client = new class implements ZktecoClient
+    $client = new class() implements ZktecoClient
     {
         public bool $logsFetched = false;
 

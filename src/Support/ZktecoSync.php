@@ -8,7 +8,7 @@ use Centrex\Hr\Contracts\ZktecoClient;
 use Centrex\Hr\Exceptions\{ZktecoConnectionException, ZktecoNotConfiguredException};
 use Centrex\Hr\Facades\Hr;
 use Centrex\Hr\Models\{Employee, ZktecoDevice};
-use Centrex\Hr\Support\Zkteco\RatsZktecoClient;
+use Centrex\Hr\Support\Zkteco\JmrashedZktecoClient;
 use Illuminate\Support\Carbon;
 
 /**
@@ -98,12 +98,16 @@ class ZktecoSync
 
     private function makeClient(ZktecoDevice $device): ZktecoClient
     {
-        if (!class_exists('\\Rats\\Zkteco\\Lib\\ZKTeco')) {
+        if (!class_exists('\\Jmrashed\\Zkteco\\Lib\\ZKTeco')) {
             throw new ZktecoNotConfiguredException(
-                'The rats/zkteco package is not installed. Run `composer require rats/zkteco` to sync from ZKTeco devices.',
+                'The jmrashed/zkteco package is not installed. Run `composer require jmrashed/zkteco` to sync from ZKTeco devices.',
             );
         }
 
-        return new RatsZktecoClient($device->ip_address, $device->port);
+        return new JmrashedZktecoClient(
+            $device->ip_address,
+            $device->port,
+            (int) config('hr.zkteco.connect_timeout', 5),
+        );
     }
 }

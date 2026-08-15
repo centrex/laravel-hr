@@ -51,7 +51,7 @@ src/
     HrEntityRegistry.php      # Generic CRUD entity definitions (Departments/Designations/Employees/Leave Types/ZKTeco Devices)
     PayrollSync.php           # Mirrors an Employee into laravel-payroll's own Employee record
     ZktecoSync.php            # Pulls punches from a ZktecoDevice, writes them via Hr::recordAttendance()
-    Zkteco/RatsZktecoClient.php  # ZktecoClient implementation wrapping the suggested rats/zkteco package
+    Zkteco/JmrashedZktecoClient.php  # ZktecoClient implementation wrapping the suggested jmrashed/zkteco package
   Http/
     Livewire/
       HrDashboard.php
@@ -118,7 +118,7 @@ Hr::getAttendanceSummary($employee, '2026-02-01', '2026-02-29');
 Pulls punches from ZKTeco biometric time clocks on the same LAN into the same `Attendance`
 table used above, by connecting out to each device (port `4370`) on a schedule — not a
 push/webhook receiver, since that protocol is only needed when devices sit behind NAT at
-remote sites. Requires `composer require rats/zkteco` (suggested, not a hard dependency —
+remote sites. Requires `composer require jmrashed/zkteco` (suggested, not a hard dependency —
 the rest of the package works without it).
 
 ```php
@@ -233,7 +233,7 @@ HR_ZKTECO_LATE_AFTER=        # e.g. 09:15 — nullable, off by default
 
 ## External hardware integration
 
-- **ZKTeco biometric devices** (optional, `rats/zkteco` suggested — not required) — `Support\ZktecoSync::syncDevice()` connects out to a `ZktecoDevice`'s `ip_address:port`, pulls its attendance log via `Contracts\ZktecoClient` (implemented by `Support\Zkteco\RatsZktecoClient`, which only ever touches the vendor SDK by dynamic class-string instantiation — never a direct type-hint — so this package stays fully loadable, and `composer test:types` stays clean, whether or not `rats/zkteco` is installed), and writes punches through the same `Hr::recordAttendance()` upsert used by the manual-entry UI. Guarded by `config('hr.zkteco.enabled')` at the config level and a `class_exists()` check inside `ZktecoSync` itself (throws `ZktecoNotConfiguredException` if the vendor package is missing) — there's no service-provider-level observer to gate, since nothing runs until `hr:zkteco:sync` is invoked.
+- **ZKTeco biometric devices** (optional, `jmrashed/zkteco` suggested — not required) — `Support\ZktecoSync::syncDevice()` connects out to a `ZktecoDevice`'s `ip_address:port`, pulls its attendance log via `Contracts\ZktecoClient` (implemented by `Support\Zkteco\JmrashedZktecoClient`, which only ever touches the vendor SDK by dynamic class-string instantiation — never a direct type-hint — so this package stays fully loadable, and `composer test:types` stays clean, whether or not `jmrashed/zkteco` is installed), and writes punches through the same `Hr::recordAttendance()` upsert used by the manual-entry UI. Guarded by `config('hr.zkteco.enabled')` at the config level and a `class_exists()` check inside `ZktecoSync` itself (throws `ZktecoNotConfiguredException` if the vendor package is missing) — there's no service-provider-level observer to gate, since nothing runs until `hr:zkteco:sync` is invoked. The vendor SDK hardcodes a 60.5s UDP socket receive timeout with no constructor option to change it; `JmrashedZktecoClient` reaches into its public `_zkclient` socket resource and overrides `SO_RCVTIMEO` down to `config('hr.zkteco.connect_timeout', 5)` seconds so an unreachable device fails fast instead of blocking `hr:zkteco:sync` for a full minute per device.
 
 ## Conventions
 
