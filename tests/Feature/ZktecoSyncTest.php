@@ -196,6 +196,52 @@ it('throws a clear connection error naming the device when connect() fails, with
     expect($client->logsFetched)->toBeFalse();
 });
 
+it('only syncs punches within the given date range', function (): void {
+    $device = ZktecoDevice::query()->create(['name' => 'Main Gate', 'ip_address' => '192.168.1.201']);
+    $employee = makeZktecoEmployee($device, '7');
+
+    $client = fakeZktecoClient([
+        ['user_id' => '7', 'timestamp' => '2026-03-30 09:00:00', 'state' => 1], // before range
+        ['user_id' => '7', 'timestamp' => '2026-04-01 09:00:00', 'state' => 1],
+        ['user_id' => '7', 'timestamp' => '2026-04-01 18:00:00', 'state' => 1],
+        ['user_id' => '7', 'timestamp' => '2026-04-05 09:00:00', 'state' => 1], // after range
+    ]);
+
+    $summary = app(ZktecoSync::class)->syncDevice(
+        $device,
+        $client,
+        from: Carbon::parse('2026-04-01'),
+        to: Carbon::parse('2026-04-01'),
+    );
+
+    expect($summary['synced'])->toBe(1);
+
+    expect(Attendance::where('employee_id', $employee->id)->whereDate('work_date', '2026-03-30')->exists())->toBeFalse()
+        ->and(Attendance::where('employee_id', $employee->id)->whereDate('work_date', '2026-04-05')->exists())->toBeFalse();
+
+    $attendance = Attendance::where('employee_id', $employee->id)->whereDate('work_date', '2026-04-01')->first();
+
+    expect($attendance)->not->toBeNull()
+        ->and(Carbon::parse($attendance->check_in)->format('H:i'))->toBe('09:00')
+        ->and(Carbon::parse($attendance->check_out)->format('H:i'))->toBe('18:00');
+});
+
+it('applies an open-ended --from with no --to', function (): void {
+    $device = ZktecoDevice::query()->create(['name' => 'Main Gate', 'ip_address' => '192.168.1.201']);
+    $employee = makeZktecoEmployee($device, '7');
+
+    $client = fakeZktecoClient([
+        ['user_id' => '7', 'timestamp' => '2026-03-30 09:00:00', 'state' => 1], // before range
+        ['user_id' => '7', 'timestamp' => '2026-04-05 09:00:00', 'state' => 1],
+    ]);
+
+    $summary = app(ZktecoSync::class)->syncDevice($device, $client, from: Carbon::parse('2026-04-01'));
+
+    expect($summary['synced'])->toBe(1);
+    expect(Attendance::where('employee_id', $employee->id)->whereDate('work_date', '2026-03-30')->exists())->toBeFalse();
+    expect(Attendance::where('employee_id', $employee->id)->whereDate('work_date', '2026-04-05')->exists())->toBeTrue();
+});
+
 it('enforces one device-user-id per device via a unique constraint', function (): void {
     $device = ZktecoDevice::query()->create(['name' => 'Main Gate', 'ip_address' => '192.168.1.201']);
     makeZktecoEmployee($device, '7', 'E-1');

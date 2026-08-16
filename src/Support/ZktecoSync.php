@@ -20,9 +20,21 @@ use Illuminate\Support\Carbon;
  */
 class ZktecoSync
 {
-    /** @return array{device_id: int, synced: int, unmatched: array<string, int>} */
-    public function syncDevice(ZktecoDevice $device, ?ZktecoClient $client = null): array
-    {
+    /**
+     * The device itself has no way to filter its log by date — getAttendanceLogs() always
+     * returns the full on-device log — so $from/$to are applied client-side once the log has
+     * been pulled, before punches are grouped into per-employee-per-day check-in/check-out
+     * pairs. $from is compared from its start of day and $to through its end of day, so
+     * passing the same date for both re-syncs exactly that one day.
+     *
+     * @return array{device_id: int, synced: int, unmatched: array<string, int>}
+     */
+    public function syncDevice(
+        ZktecoDevice $device,
+        ?ZktecoClient $client = null,
+        ?Carbon $from = null,
+        ?Carbon $to = null,
+    ): array {
         $client ??= $this->makeClient($device);
 
         if (!$client->connect()) {
@@ -36,6 +48,22 @@ class ZktecoSync
             $logs = $client->getAttendanceLogs();
         } finally {
             $client->disconnect();
+        }
+
+        if ($from) {
+            $from = $from->clone()->startOfDay();
+            $logs = array_values(array_filter(
+                $logs,
+                static fn (array $log): bool => Carbon::parse($log['timestamp'])->gte($from),
+            ));
+        }
+
+        if ($to) {
+            $to = $to->clone()->endOfDay();
+            $logs = array_values(array_filter(
+                $logs,
+                static fn (array $log): bool => Carbon::parse($log['timestamp'])->lte($to),
+            ));
         }
 
         $synced = 0;

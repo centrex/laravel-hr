@@ -7,17 +7,38 @@ namespace Centrex\Hr\Commands;
 use Centrex\Hr\Models\ZktecoDevice;
 use Centrex\Hr\Support\ZktecoSync;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class ZktecoSyncCommand extends Command
 {
-    public $signature = 'hr:zkteco:sync {--device=* : Sync only these ZktecoDevice IDs; default is all active devices}';
+    public $signature = 'hr:zkteco:sync
+        {--device=* : Sync only these ZktecoDevice IDs; default is all active devices}
+        {--from= : Only sync punches on or after this date (Y-m-d); default is no lower bound}
+        {--to= : Only sync punches on or before this date (Y-m-d); default is no upper bound}';
 
     public $description = 'Pull attendance punches from ZKTeco device(s) into hr_attendances';
 
     public function handle(ZktecoSync $sync): int
     {
         $this->info('Syncing ZKTeco devices...');
+
+        try {
+            $fromOption = $this->option('from');
+            $toOption = $this->option('to');
+            $from = is_string($fromOption) && $fromOption !== '' ? Carbon::parse($fromOption) : null;
+            $to = is_string($toOption) && $toOption !== '' ? Carbon::parse($toOption) : null;
+        } catch (\Throwable) {
+            $this->error('Invalid --from/--to date. Use a format like 2026-04-01.');
+
+            return self::FAILURE;
+        }
+
+        if ($from && $to && $from->gt($to)) {
+            $this->error('--from date must not be after --to date.');
+
+            return self::FAILURE;
+        }
 
         $deviceIds = $this->option('device');
 
@@ -43,9 +64,9 @@ class ZktecoSyncCommand extends Command
 
             $this->components->task(
                 "Device {$device->id} ({$device->name}) on {$device->ip_address}",
-                function () use ($sync, $device, &$summary, &$error): bool {
+                function () use ($sync, $device, $from, $to, &$summary, &$error): bool {
                     try {
-                        $summary = $sync->syncDevice($device);
+                        $summary = $sync->syncDevice($device, from: $from, to: $to);
 
                         return true;
                     } catch (\Throwable $e) {

@@ -147,7 +147,10 @@ day `late` instead of `present` when the first punch is after that time.
 
 Run `php artisan hr:zkteco:sync` (optionally `--device=1 --device=2` to target specific
 `ZktecoDevice` IDs; default is all `is_active` devices) — schedule it from the host app, e.g.
-`Schedule::command('hr:zkteco:sync')->everyFiveMinutes()`.
+`Schedule::command('hr:zkteco:sync')->everyFiveMinutes()`. `--from=2026-04-01`/`--to=2026-04-01`
+restrict which punches get synced (inclusive, `Y-m-d`; either may be omitted for an open-ended
+bound) — applied client-side in `ZktecoSync::syncDevice()` after the full on-device log is
+pulled, since the device protocol itself has no way to filter by date.
 
 ### Leave
 
