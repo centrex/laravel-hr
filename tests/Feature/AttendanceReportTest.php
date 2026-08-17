@@ -15,7 +15,7 @@ beforeEach(function (): void {
 // weekend_days config ([5, 6] — Fri/Sat), so this range has exactly 4 working days.
 function makeReportComponent(): AttendanceReportPage
 {
-    $component = new AttendanceReportPage();
+    $component = new AttendanceReportPage;
     $component->mount();
     $component->fromDate = '2026-03-02';
     $component->toDate = '2026-03-06';
