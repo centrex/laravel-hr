@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
+use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, AttendanceReportPage, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
 use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Support\HrEntityRegistry;
 use Illuminate\Support\Facades\Route;
@@ -13,6 +13,7 @@ Route::middleware(config('hr.web_middleware', ['web', 'auth']))
     ->group(function (): void {
         Route::get('/dashboard', HrDashboard::class)->name('dashboard');
         Route::get('/attendance', AttendanceManagementPage::class)->name('attendance');
+        Route::get('/attendance-report', AttendanceReportPage::class)->name('attendance-report');
 
         foreach (HrEntityRegistry::masterDataEntities() as $entity) {
             Route::get("/{$entity}", EntityIndexPage::class)->name("entities.{$entity}.index")->defaults('entity', $entity);

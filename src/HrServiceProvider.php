@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Centrex\Hr;
 
 use Centrex\Hr\Commands\{HrCommand, ZktecoSyncCommand};
-use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, HrChartsCard, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
+use Centrex\Hr\Http\Livewire\{AttendanceManagementPage, AttendanceReportPage, HrChartsCard, HrDashboard, LeaveApprovalsPage, MyAttendancePage, MyLeavePage};
 use Centrex\Hr\Http\Livewire\Entities\{EntityFormPage, EntityIndexPage};
 use Centrex\Hr\Models\Employee;
 use Centrex\Hr\Observers\EmployeePayrollObserver;
@@ -122,6 +122,7 @@ class HrServiceProvider extends ServiceProvider
         Livewire::component('hr-entity-form', EntityFormPage::class);
         Livewire::component('hr-my-attendance', MyAttendancePage::class);
         Livewire::component('hr-attendance-management', AttendanceManagementPage::class);
+        Livewire::component('hr-attendance-report', AttendanceReportPage::class);
         Livewire::component('hr-my-leave', MyLeavePage::class);
         Livewire::component('hr-leave-approvals', LeaveApprovalsPage::class);
     }
